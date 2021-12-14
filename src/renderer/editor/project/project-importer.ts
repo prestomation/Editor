@@ -572,9 +572,13 @@ export class ProjectImporter {
      * Sets the parent of the given node waiting for it.
      */
     private static _SetWaitingParent(n: Node): void {
-        if (!n.metadata?._waitingParentId) { return; }
+        const parentId = n.metadata?._waitingParentId ?? null;
+        if (parentId === null) {
+            return;
+        }
 
-        n.parent = n.getScene().getNodeByID(n.metadata._waitingParentId) ?? n.getScene().getTransformNodeByID(n.metadata._waitingParentId);
+        const scene = n.getScene();
+        n.parent = scene.getNodeById(parentId) ?? scene.getTransformNodeById(parentId);
 
         delete n.metadata._waitingParentId;
         n._waitingParentId = null;
