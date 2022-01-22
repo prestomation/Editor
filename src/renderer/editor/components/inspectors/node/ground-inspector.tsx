@@ -4,7 +4,7 @@ import { Nullable } from "../../../../../shared/types";
 
 import * as React from "react";
 
-import { GroundMesh, VertexData, Texture, Color3 } from "babylonjs";
+import { GroundMesh, VertexData, Texture, Color3, CreateGroundFromHeightMapVertexData } from "babylonjs";
 
 import { Inspector, IObjectInspectorProps } from "../../inspector";
 
@@ -207,7 +207,7 @@ export class GroundInspector extends AbstractInspector<GroundMesh, IGroundInspec
         const heightMapMetadata = this._getGroundMetadata().heightMap;
         if (!heightMapMetadata?.options) { return; }
 
-        this.selectedObject.geometry?.setAllVerticesData(VertexData.CreateGroundFromHeightMap({
+        this.selectedObject.geometry?.setAllVerticesData(CreateGroundFromHeightMapVertexData({
             width: this.selectedObject._width,
             height: this.selectedObject._height,
             subdivisions: this.selectedObject.subdivisions,

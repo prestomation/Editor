@@ -5,7 +5,7 @@ import { extname, join, normalize } from "path";
 
 import { IPCResponses, IPCRequests } from "../../../shared/ipc";
 
-import { Tools as BabylonTools, Engine, Scene, Node, Nullable, Camera, Mesh, Material } from "babylonjs";
+import { Tools as BabylonTools, Engine, Scene, Node, Nullable, Camera, Mesh, Material, AbstractMesh } from "babylonjs";
 
 import { ICommonMetadata, IEditorPreferences, IMaterialMetadata, IMeshMetadata, ITransformNodeMetadata } from "./types";
 
@@ -58,7 +58,7 @@ export class Tools {
      * Returns the metadatas of the given mesh.
      * @param mesh defines the reference to the mesh to get its metadatas.
      */
-    public static GetMeshMetadata(mesh: Mesh): IMeshMetadata {
+    public static GetMeshMetadata(mesh: AbstractMesh): IMeshMetadata {
         return this.GetNodeMetadata(mesh) as IMeshMetadata;
     }
 

@@ -136,7 +136,8 @@ export class ScenePicker {
      */
     private _onCanvasUp(ev: IMouseEvent, byPassDistance: boolean = false): void {
         this._editor.scene!.meshes.forEach((m) => {
-            if (!m._masterMesh && !m.metadata?.collider) {
+            const metadata = Tools.GetMeshMetadata(m);
+            if (!m._masterMesh && !metadata.collider && !metadata.notPickable) {
                 m.isPickable = true;
             }
         });
@@ -155,6 +156,7 @@ export class ScenePicker {
         if (ev.button === 2) {
             if (object instanceof SubMesh) { object = object.getMesh(); }
             if (object?._scene === this.icons._layer.utilityLayerScene) { object = object.metadata.node as Node; }
+            if (object?.metadata?.isHelper) { return; }
             return this._onCanvasContextMenu(ev, object);
         }
 
@@ -162,6 +164,13 @@ export class ScenePicker {
             if (object instanceof SubMesh) {
                 this._editor.selectedSubMeshObservable.notifyObservers(object);
             } else {
+                if (object instanceof AbstractMesh) {
+                    const metadata = Tools.GetMeshMetadata(object);
+                    if (metadata.isHelper) {
+                        return this._editor.preview.gizmo.setAttachedNode(object);
+                    }
+                }
+
                 if (object._scene === this.icons._layer.utilityLayerScene) {
                     object = object.metadata.node;
                 }

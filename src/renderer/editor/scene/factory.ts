@@ -3,7 +3,7 @@ import { writeJSON } from "fs-extra";
 import filenamify from "filenamify/filenamify";
 
 import {
-    Mesh,
+    AbstractMesh, Mesh,
     PointLight, DirectionalLight, SpotLight, HemisphericLight,
     Node, TransformNode,  GroundMesh, ParticleHelper, IParticleSystem,
     Vector3,
@@ -18,6 +18,8 @@ import { Dialog } from "../gui/dialog";
 import { Tools } from "../tools/tools";
 
 import { Editor } from "../editor";
+
+import { Path3DMesh } from "./curves/path3d";
 
 export class SceneFactory {
     /**
@@ -214,6 +216,14 @@ export class SceneFactory {
     }
 
     /**
+     * Adds a new 3d path to the scene.
+     * @param editor defines the reference to the editor.
+     */
+    public static Add3dPath(editor: Editor): Path3DMesh {
+        return this._ConfigureNode(new Path3DMesh("New 3D Path", editor.scene!));
+    }
+
+    /**
      * Adds a new particle system to the scene.
      * @param editor the editor reference.
      * @param gpu defines wether or not the create system particle should use GPU accelration features.
@@ -234,5 +244,20 @@ export class SceneFactory {
     private static _ConfigureNode<T extends Node>(node: T): T {
         node.id = Tools.RandomId();
         return node;
+    }
+
+    /**
+     * Configures the given mesh has a helper in the scene.
+     * @param mesh defines the reference to the mesh to configure as helper.
+     * @param onGizmoTransformChanged defines the reference to the function called on the helper's transform has been changed using the scene's gizmo.
+     */
+    public static _SetMeshAsHelper(mesh: AbstractMesh, onGizmoTransformChanged: () => void): void {
+        mesh.isPickable = true;
+        mesh.doNotSerialize = true;
+
+        const metadata = Tools.GetMeshMetadata(mesh);
+        metadata.isHelper = true;
+        metadata.notVisibleInGraph = true;
+        metadata.onGizmoTransformChanged = () => onGizmoTransformChanged();
     }
 }

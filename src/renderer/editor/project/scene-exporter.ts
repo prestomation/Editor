@@ -14,7 +14,6 @@ import { KTXTools, KTXToolsType } from "../tools/ktx";
 import { MaterialTools } from "../tools/components/material";
 
 import { SceneSettings } from "../scene/settings";
-import { SceneExportOptimzer } from "../scene/export-optimizer";
 
 import { Project } from "./project";
 import { WorkSpace } from "./workspace";
@@ -23,6 +22,7 @@ import { GraphCode } from "../graph/graph";
 import { GraphCodeGenerator } from "../graph/generate";
 
 import { GeometryExporter } from "../export/geometry";
+import { SceneExportOptimzer } from "../export/export-optimizer";
 
 export interface IExportFinalSceneOptions {
 	/**

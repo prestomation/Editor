@@ -153,6 +153,34 @@ export interface IMeshMetadata extends ICommonMetadata {
     keepGeometryInline?: boolean;
 
     /**
+     * Defines wether or not the mesh is a helper component.
+     */
+    isHelperComponent?: boolean;
+    /**
+     * Defines wether or not the mesh is a helper (and then should be pickable, serialized, etc.).
+     */
+    isHelper?: boolean;
+    /**
+     * In case of a helper, defines the reference to the function called on the helper's
+     * transform has been changed using the scene's gizmo.
+     */
+    onGizmoTransformChanged?: () => void;
+
+    /**
+     * Defines wether or not the mesh should not be visible in the scene's graph.
+     */
+    notVisibleInGraph?: boolean;
+    /**
+     * Defines wether or not the mesh should be never pickable.
+     */
+    notPickable?: boolean;
+
+    /**
+     * Defines the reference to the collider parameters.
+     */
+    collider?: any;
+
+    /**
      * Defines the original data of the source file.
      */
     originalSourceFile?: IOriginalSourceFileMetadata;

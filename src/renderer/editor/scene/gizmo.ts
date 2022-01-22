@@ -1,3 +1,5 @@
+import { Nullable } from "../../../shared/types";
+
 import {
     PositionGizmo, RotationGizmo, ScaleGizmo, UtilityLayerRenderer, AbstractMesh, Node, TransformNode,
     LightGizmo, Light, IParticleSystem, Sound, Vector3, Quaternion, Camera, CameraGizmo, HemisphericLight,
@@ -5,8 +7,8 @@ import {
     Mesh,
 } from "babylonjs";
 
-import { Nullable } from "../../../shared/types";
 
+import { Tools } from "../tools/tools";
 import { undoRedo } from "../tools/undo-redo";
 
 import { InspectorNotifier } from "../gui/inspector/notifier";
@@ -209,6 +211,12 @@ export class SceneGizmo {
         // Mesh or transform node
         if (!node || !this._currentGizmo) { return; }
 
+        // Check node type
+        if (node instanceof AbstractMesh) {
+            const metadata = Tools.GetMeshMetadata(node);
+            if (metadata.isHelperComponent) { return; }
+        }
+
         // CHeck node has a billboard mode
         if (node instanceof TransformNode && node.billboardMode !== TransformNode.BILLBOARDMODE_NONE && this._type === GizmoType.Rotation) {
             return;
@@ -281,7 +289,13 @@ export class SceneGizmo {
     private _notifyGizmoDrag(): void {
         if (!this._currentGizmo) { return; }
 
-        // Nothing to do for now...
+        // In case of helpers, notify transform changed
+        if (this._currentGizmo?.attachedMesh) {
+            const metadata = Tools.GetMeshMetadata(this._currentGizmo.attachedMesh);
+            if (metadata.isHelper) {
+                metadata.onGizmoTransformChanged?.();
+            }
+        }
     }
 
     /**

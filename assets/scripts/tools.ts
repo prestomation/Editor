@@ -7,9 +7,10 @@ import { Scene } from "@babylonjs/core/scene";
 import { Nullable } from "@babylonjs/core/types";
 import { Mesh } from "@babylonjs/core/Meshes/mesh";
 import { Engine } from "@babylonjs/core/Engines/engine";
+import { Path3D } from "@babylonjs/core/Maths/math.path";
 import { Color3, Color4 } from "@babylonjs/core/Maths/math.color";
 import { EngineStore } from "@babylonjs/core/Engines/engineStore";
-import { SceneLoader } from "@babylonjs/core/Loading/sceneLoader"; 
+import { SceneLoader } from "@babylonjs/core/Loading/sceneLoader";
 import { AbstractMesh } from "@babylonjs/core/Meshes/abstractMesh";
 import { SerializationHelper } from "@babylonjs/core/Misc/decorators";
 import { Vector2, Vector3, Vector4, Matrix } from "@babylonjs/core/Maths/math.vector";
@@ -296,6 +297,9 @@ function requireScriptForNodes(scene: Scene, scriptsMap: ScriptMap, nodes: (Node
 export async function runScene(scene: Scene, rootUrl?: string): Promise<void> {
     const scriptsMap = require("./scripts-map").scriptsMap;
 
+    // Create 3d paths
+    configure3dPaths(scene);
+
     // Attach scripts to objects in scene.
     attachScripts(scriptsMap, scene);
 
@@ -433,14 +437,14 @@ export function configurePostProcesses(scene: Scene, rootUrl: string = null): vo
         screenSpaceReflectionPostProcessRef.reflectionSamples = data.screenSpaceReflections.json.reflectionSamples;
         screenSpaceReflectionPostProcessRef.enableSmoothReflections = data.screenSpaceReflections.json.enableSmoothReflections;
     }
-    
+
     if (data.default && !defaultRenderingPipelineRef) {
         defaultRenderingPipelineRef = DefaultRenderingPipeline.Parse(data.default.json, scene, rootUrl);
         if (!data.default.enabled) {
             scene.postProcessRenderPipelineManager.detachCamerasFromRenderPipeline(defaultRenderingPipelineRef.name, scene.cameras);
         }
     }
-    
+
     if (data.motionBlur?.json) {
         // motionBlurPostProcessRef = MotionBlurPostProcess._Parse(data.motionBlur.json, scene.activeCamera!, scene, "");
         motionBlurPostProcessRef = new MotionBlurPostProcess(data.motionBlur.json.name, scene, 1.0, scene.activeCamera!);
@@ -455,6 +459,35 @@ export function configurePostProcesses(scene: Scene, rootUrl: string = null): vo
         defaultRenderingPipelineRef = null;
         motionBlurPostProcessRef = null;
     });
+}
+
+/**
+ * Defines the dictionary of all the available 3d paths.
+ * @example
+ *  import { paths3d } from "./tools.ts";
+ *  const p = paths3d["path_name_in_the_editor"];
+ *  console.log(p);
+ */
+export const paths3d: Record<string, Path3D> = {};
+
+/**
+ * Creates and configures the 3d paths of the given scene.
+ * @param scene defines the reference to the scene containing the 3d paths in its metadata.
+ */
+export function configure3dPaths(scene: Scene): void {
+    if (!scene.metadata?.paths3d?.length) {
+        return;
+    }
+
+    scene.metadata?.paths3d.forEach((p) => {
+        const path = new Path3D(p.path);
+
+        p.done = true;
+
+        paths3d[p.name] = path;
+    });
+
+    delete scene.metadata.paths3d;
 }
 
 /**

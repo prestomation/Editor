@@ -107,6 +107,8 @@ import "./components/inspectors/particle-systems/particle-system-gradients-inspe
 
 import "./components/inspectors/sound/sound-inspector";
 
+import "./components/inspectors/node/components/path3d-inspector";
+
 // Assets
 import { MaterialAssets } from "./assets/materials";
 import { TextureAssets } from "./assets/textures";

@@ -54,13 +54,21 @@ export class NodeInspector<T extends Node, S extends INodeInspectorState> extend
     public renderContent(): React.ReactNode {
         return (
             <>
-                <InspectorSection title="Common">
-                    <InspectorString object={this.selectedObject} property="name" label="Name" noUndoRedo={true} onFinishChange={(v, o) => this._handleNameChanged(v, o)} />
-                    <InspectorBoolean object={this.state} property="enabled" label="Enabled" noUndoRedo={true} onFinishChange={(v, o) => this._handleEnabledChange(v, o)} />
-                </InspectorSection>
-
+                {this.getCommonInspector()}
                 {super.renderContent()}
             </>
+        );
+    }
+
+    /**
+     * Returns the inspector used to edit the common properties of the node.
+     */
+    protected getCommonInspector(): React.ReactNode {
+        return (
+            <InspectorSection title="Common">
+                <InspectorString object={this.selectedObject} property="name" label="Name" noUndoRedo={true} onFinishChange={(v, o) => this._handleNameChanged(v, o)} />
+                <InspectorBoolean object={this.state} property="enabled" label="Enabled" noUndoRedo={true} onFinishChange={(v, o) => this._handleEnabledChange(v, o)} />
+            </InspectorSection>
         );
     }
 

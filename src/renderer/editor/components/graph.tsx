@@ -558,14 +558,21 @@ export class Graph extends React.Component<IGraphProps, IGraphState> {
         if (node instanceof Mesh && node._masterMesh) { return null; }
         if (node === SceneSettings.Camera) { return null; }
 
+        node.metadata = node.metadata ?? {};
+        if (node.metadata.notVisibleInGraph) {
+            return null;
+        }
+
         let disabled = false;
 
-        node.metadata = node.metadata ?? {};
         if (node instanceof AbstractMesh) {
-            disabled = (node.metadata?.collider ?? null) !== null;
+            const metadata = Tools.GetMeshMetadata(node);
+            const notPickable = metadata.notPickable ?? false;
 
-            node.metadata.isPickable = disabled ? false : node.metadata.isPickable ?? node.isPickable;
-            node.isPickable = !disabled;
+            disabled = (metadata?.collider ?? null) !== null;
+
+            metadata.isPickable = disabled ? false : metadata.isPickable ?? node.isPickable;
+            node.isPickable = !disabled && !notPickable;
 
             node.subMeshes?.forEach((sm) => sm._id = sm._id ?? Tools.RandomId());
         }
